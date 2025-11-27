@@ -1,16 +1,38 @@
-# app_mi_listita_go
+# Mi Listita Go 🛒
 
-A new Flutter project.
+Lista de compras con SQLite y Flutter
 
-## Getting Started
+## 🚀 Instalación
 
-This project is a starting point for a Flutter application.
+1. Clona el repositorio:
+```bash
+git clone <url-del-repo>
+cd mi_listita_go
+```
 
-A few resources to get you started if this is your first Flutter project:
+2. Instala las dependencias:
+```bash
+flutter pub get
+```
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+3. Ejecuta la app:
+```bash
+flutter run
+```
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 📱 Requisitos
+
+- Flutter SDK instalado
+- Emulador Android/iOS o dispositivo físico
+- NO funciona en web (usa SQLite)
+
+## 🗄️ Base de datos
+
+La app usa SQLite local. La base de datos se crea automáticamente la primera vez que ejecutas la app.
+
+## 🎨 Características
+
+- CRUD completo
+- 9 categorías predefinidas
+- Marcar items como comprados
+- Diseño minimalista
