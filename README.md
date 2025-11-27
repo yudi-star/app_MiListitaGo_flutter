@@ -6,8 +6,8 @@ Lista de compras con SQLite y Flutter
 
 1. Clona el repositorio:
 ```bash
-git clone <url-del-repo>
-cd mi_listita_go
+git clone https://github.com/yudi-star/app_MiListitaGo_flutter.git
+cd app_mi_listita_go
 ```
 
 2. Instala las dependencias:
