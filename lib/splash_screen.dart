@@ -35,8 +35,9 @@ class _SplashScreenState extends State<SplashScreen>
     // Iniciar animación
     _controller.forward();
 
-    // Navegar a la lista después de 4 segundos
-    Future.delayed(const Duration(seconds: 4), () {
+    // Navegar a la lista después de 4 segundos (verificar mounted)
+    Future.delayed(const Duration(seconds: 4)).then((_) {
+      if (!mounted) return;
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const ShoppingListView()),
@@ -53,7 +54,7 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1a1a1a), 
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Center(
         child: FadeTransition(
           opacity: _fadeAnimation,
@@ -66,34 +67,44 @@ class _SplashScreenState extends State<SplashScreen>
                 Container(
                   padding: const EdgeInsets.all(35),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFFF9C4), 
+                    color: Colors.white,
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFFFFF9C4),
-                        blurRadius: 30,
-                        spreadRadius: 10,
-                      ),
+                          color: Color((0x2E << 24) | (Theme.of(context).primaryColor.toARGB32() & 0x00FFFFFF)),
+                          blurRadius: 24,
+                          spreadRadius: 6,
+                        ),
                     ],
                   ),
                   child: const Icon(
                     Icons.shopping_bag_outlined,
                     size: 80,
-                    color: Color(0xFF1a1a1a),
+                    color: Color(0xFF2E7D32),
                   ),
                 ),
                 const SizedBox(height: 40),
 
-                // Título minimalista
-                const Text(
-                  'Mi Listita Go',
-                  style: TextStyle(
-                    fontSize: 42,
-                    fontWeight: FontWeight.w300,
-                    color: Color(0xFFFFF9C4),
-                    letterSpacing: 4,
-                  ),
-                ),
+                // Título con mayor contraste (usa colores del tema)
+                Builder(builder: (context) {
+                  final textColor = Theme.of(context).colorScheme.onSurface;
+                  return Text(
+                    'Mi Listita Go',
+                    style: TextStyle(
+                      fontSize: 42,
+                      fontWeight: FontWeight.w600,
+                      color: textColor,
+                      letterSpacing: 4,
+                      shadows: [
+                        Shadow(
+                          color: Colors.black12,
+                          offset: Offset(0, 2),
+                          blurRadius: 4,
+                        ),
+                      ],
+                    ),
+                  );
+                }),
                 const SizedBox(height: 8),
 
                 // Subtítulo elegante
@@ -114,7 +125,7 @@ class _SplashScreenState extends State<SplashScreen>
                   height: 30,
                   child: CircularProgressIndicator(
                     valueColor: AlwaysStoppedAnimation<Color>(
-                      Color(0xFFFFF9C4),
+                      Theme.of(context).primaryColor,
                     ),
                     strokeWidth: 2,
                   ),

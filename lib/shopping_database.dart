@@ -102,6 +102,16 @@ class ShoppingDatabase {
     );
   }
 
+  // DELETE - Eliminar todos los items marcados como comprados
+  Future<int> deletePurchasedAll() async {
+    final db = await instance.database;
+    return await db.delete(
+      ShoppingItemFields.tableName,
+      where: '${ShoppingItemFields.isPurchased} = ?',
+      whereArgs: [1],
+    );
+  }
+
   // Cierra la base de datos
   Future close() async {
     final db = await instance.database;

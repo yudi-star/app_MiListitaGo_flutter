@@ -36,6 +36,46 @@ class _ItemDetailViewState extends State<ItemDetailView> {
     'Otros',
   ];
 
+  // Devuelve un ícono según la categoría (coincide con shopping_list_view)
+  IconData _getCategoryIcon(String category) {
+    switch (category) {
+      case 'Frutas':
+        return Icons.apple;
+      case 'Verduras':
+        return Icons.grass;
+      case 'Lácteos':
+        return Icons.local_drink;
+      case 'Carnes':
+        return Icons.lunch_dining;
+      case 'Panadería':
+        return Icons.bakery_dining;
+      case 'Bebidas':
+        return Icons.local_cafe;
+      case 'Limpieza':
+        return Icons.cleaning_services;
+      case 'Snacks':
+        return Icons.cookie;
+      default:
+        return Icons.shopping_basket;
+    }
+  }
+
+  // Colores por categoría (coincide con shopping_list_view)
+  Color _categoryColor(String category) {
+    const map = {
+      'Frutas': Color(0xFFEF9A9A),
+      'Verduras': Color(0xFFA5D6A7),
+      'Lácteos': Color(0xFF90CAF9),
+      'Carnes': Color(0xFFFFCC80),
+      'Panadería': Color(0xFFF8BBD0),
+      'Bebidas': Color(0xFFB39DDB),
+      'Limpieza': Color(0xFFB2EBF2),
+      'Snacks': Color(0xFFFFF59D),
+      'Otros': Color(0xFFCFD8DC),
+    };
+    return map[category] ?? const Color(0xFFCFD8DC);
+  }
+
   @override
   void initState() {
     loadItem();
@@ -80,42 +120,47 @@ class _ItemDetailViewState extends State<ItemDetailView> {
       database.update(newItem);
     }
 
-    Navigator.pop(context);
+    // Return a result so the previous screen can show a SnackBar
+    Navigator.pop(context, isNewItem ? 'created' : 'updated');
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final primary = theme.colorScheme.primary;
+    final textPrimary = theme.appBarTheme.foregroundColor ?? theme.colorScheme.onSurface;
+    final subtitleColor = theme.textTheme.bodySmall?.color ?? theme.colorScheme.onSurface.withAlpha((0.7 * 255).round());
+
     return Scaffold(
-      backgroundColor: const Color(0xFF1a1a1a),
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: const Color(0xFF1a1a1a),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFFFFF9C4)),
+          icon: Icon(Icons.arrow_back, color: textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           isNewItem ? 'Nuevo Item' : 'Editar Item',
-          style: const TextStyle(
-            color: Color(0xFFFFF9C4),
+          style: TextStyle(
+            color: textPrimary,
             fontSize: 20,
-            fontWeight: FontWeight.w300,
-            letterSpacing: 1,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.5,
           ),
         ),
         actions: [
           IconButton(
             onPressed: saveItem,
-            icon: const Icon(
+            icon: Icon(
               Icons.check,
-              color: Color(0xFFFFF9C4),
+              color: primary,
             ),
           ),
         ],
       ),
       body: isLoading
-          ? const Center(
-              child: CircularProgressIndicator(color: Color(0xFFFFF9C4)),
+          ? Center(
+              child: CircularProgressIndicator(color: primary),
             )
           : SingleChildScrollView(
               padding: const EdgeInsets.all(24),
@@ -124,27 +169,48 @@ class _ItemDetailViewState extends State<ItemDetailView> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Hero target for the item's category icon (only when editing existing item)
+                    if (!isNewItem && widget.itemId != null && nameController.text.isNotEmpty) ...[
+                      Center(
+                        child: Hero(
+                          tag: 'item-${widget.itemId}',
+                          child: Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: _categoryColor(selectedCategory),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              _getCategoryIcon(selectedCategory),
+                              color: Colors.white,
+                              size: 48,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                    ],
                     // Campo de nombre
                     TextFormField(
                       controller: nameController,
-                      style: const TextStyle(color: Color(0xFFe0e0e0)),
+                      style: TextStyle(color: textPrimary),
                       decoration: InputDecoration(
                         labelText: 'Nombre del producto',
-                        labelStyle: const TextStyle(color: Color(0xFF9e9e9e)),
-                        prefixIcon: const Icon(
+                        labelStyle: TextStyle(color: subtitleColor),
+                        prefixIcon: Icon(
                           Icons.shopping_bag_outlined,
-                          color: Color(0xFFFFF9C4),
+                          color: primary,
                         ),
                         filled: true,
-                        fillColor: const Color(0xFF2a2a2a),
+                          fillColor: theme.colorScheme.surfaceContainerHighest,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(
-                            color: Color(0xFFFFF9C4),
+                          borderSide: BorderSide(
+                            color: primary,
                             width: 1,
                           ),
                         ),
@@ -161,24 +227,24 @@ class _ItemDetailViewState extends State<ItemDetailView> {
                     // Campo de cantidad
                     TextFormField(
                       controller: quantityController,
-                      style: const TextStyle(color: Color(0xFFe0e0e0)),
+                      style: TextStyle(color: textPrimary),
                       decoration: InputDecoration(
                         labelText: 'Cantidad',
-                        labelStyle: const TextStyle(color: Color(0xFF9e9e9e)),
-                        prefixIcon: const Icon(
+                        labelStyle: TextStyle(color: subtitleColor),
+                        prefixIcon: Icon(
                           Icons.numbers,
-                          color: Color(0xFFFFF9C4),
+                          color: primary,
                         ),
                         filled: true,
-                        fillColor: const Color(0xFF2a2a2a),
+                          fillColor: theme.colorScheme.surfaceContainerHighest,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(
-                            color: Color(0xFFFFF9C4),
+                          borderSide: BorderSide(
+                            color: primary,
                             width: 1,
                           ),
                         ),
@@ -197,20 +263,20 @@ class _ItemDetailViewState extends State<ItemDetailView> {
                     const SizedBox(height: 32),
 
                     // Selector de categoría
-                    const Text(
+                    Text(
                       'Categoría',
                       style: TextStyle(
                         fontSize: 14,
-                        fontWeight: FontWeight.w300,
-                        color: Color(0xFF9e9e9e),
-                        letterSpacing: 2,
+                        fontWeight: FontWeight.w500,
+                        color: subtitleColor,
+                        letterSpacing: 1.2,
                       ),
                     ),
                     const SizedBox(height: 16),
                     Wrap(
                       spacing: 10,
                       runSpacing: 10,
-                      children: categories.map((category) {
+                        children: categories.map((category) {
                         final isSelected = selectedCategory == category;
                         return GestureDetector(
                           onTap: () {
@@ -221,24 +287,18 @@ class _ItemDetailViewState extends State<ItemDetailView> {
                               horizontal: 16,
                               vertical: 10,
                             ),
-                            decoration: BoxDecoration(
-                              color: isSelected
-                                  ? const Color(0xFFFFF9C4).withOpacity(0.15)
-                                  : const Color(0xFF2a2a2a),
+                              decoration: BoxDecoration(
+                                color: isSelected ? theme.colorScheme.primary : theme.colorScheme.surfaceContainerHighest,
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all(
-                                color: isSelected
-                                    ? const Color(0xFFFFF9C4)
-                                    : const Color(0xFF404040),
+                                color: isSelected ? theme.colorScheme.primary : theme.colorScheme.outline,
                                 width: 1,
                               ),
                             ),
                             child: Text(
                               category,
                               style: TextStyle(
-                                color: isSelected
-                                    ? const Color(0xFFFFF9C4)
-                                    : const Color(0xFF9e9e9e),
+                                color: isSelected ? theme.colorScheme.onPrimary : theme.colorScheme.onSurface,
                                 fontSize: 13,
                                 fontWeight: FontWeight.w400,
                               ),
@@ -256,8 +316,8 @@ class _ItemDetailViewState extends State<ItemDetailView> {
                       child: ElevatedButton(
                         onPressed: saveItem,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFFFF9C4),
-                          foregroundColor: const Color(0xFF1a1a1a),
+                          backgroundColor: theme.colorScheme.primary,
+                          foregroundColor: theme.colorScheme.onPrimary,
                           elevation: 0,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
